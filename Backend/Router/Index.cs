@@ -2,10 +2,10 @@ namespace Backend.Router;
 
 public static class Index
 {
-  public static IEndpointRouteBuilder FoodyRouter(this IEndpointRouteBuilder endpoints)
-  {
-    endpoints.MapGroup("/api")
-      .CategoryRoutes();
-    return endpoints;
-  }
+    public static IEndpointRouteBuilder ApiV1(this IEndpointRouteBuilder endpoints)
+    {
+        endpoints.MapGroup("/api")
+          .CategoryRoutes();
+        return endpoints;
+    }
 }
