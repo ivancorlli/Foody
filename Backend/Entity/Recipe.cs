@@ -24,4 +24,25 @@ public sealed class Recipe
         CreatedAt = now;
         ModifiedAt = now;
     }
+
+    public void AddIngridient(Ingridient ingridient)
+    {
+        _ingridients.Add(ingridient);
+        Update();
+    }
+
+    public void RemoveIngridient(Ingridient ingridient)
+    {
+        bool exists = _ingridients.Contains(ingridient);
+        if (exists)
+        {
+            _ingridients.Remove(ingridient);
+            Update();
+        }
+    }
+
+    private void Update()
+    {
+        ModifiedAt = DateTimeOffset.Now;
+    }
 }
