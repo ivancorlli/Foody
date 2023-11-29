@@ -1,15 +1,8 @@
-using Backend.Entity;
-using Backend.Interface;
 using Backend.Router;
-using Backend.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
-
-services.AddScoped<IRepository<Category>>();
-services.AddScoped<IRepository<Recipe>>();
-services.AddScoped<CategoryService>();
-
+services.InstallExtensions(builder.Configuration);
 
 var app = builder.Build();
 
