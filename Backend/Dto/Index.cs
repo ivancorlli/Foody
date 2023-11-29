@@ -15,3 +15,8 @@ public sealed record IngridientRecipeBody(
     double Qty,
     Measure Measure
     );
+public sealed record StepRecipeBody(
+    string Name,
+    string Description,
+    string? Picture
+    );

@@ -96,4 +96,42 @@ public static class RecipeController
 
     }
 
+    public static IResult AddStep(
+        [FromServices] IRepository<Recipe> _repo,
+        [FromBody] StepRecipeBody body,
+        [FromRoute] Guid RecipeId
+        )
+    {
+        try
+        {
+            Step step = new(body.Name, body.Description, body.Picture);
+            Recipe recipe = _repo.GetById(RecipeId);
+            recipe.AddStep(step);
+            return Results.Ok();
+        }
+        catch (System.Exception)
+        {
+            return Results.BadRequest();
+        }
+    }
+    public static IResult RemoveStep(
+        [FromServices] IRepository<Recipe> _repo,
+        [FromBody] StepRecipeBody body,
+        [FromRoute] Guid RecipeId
+        )
+    {
+        try
+        {
+            Step step = new(body.Name, body.Description, body.Picture);
+            Recipe recipe = _repo.GetById(RecipeId);
+            recipe.RemoveStep(step);
+            return Results.Ok();
+        }
+        catch (System.Exception)
+        {
+            return Results.BadRequest();
+        }
+    }
+
+
 }

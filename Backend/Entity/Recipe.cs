@@ -41,6 +41,22 @@ public sealed class Recipe
         }
     }
 
+    public void AddStep(Step step)
+    {
+        _steps.Add(step);
+        Update();
+    }
+
+    public void RemoveStep(Step step)
+    {
+        bool exists = _steps.Contains(step);
+        if (exists)
+        {
+            _steps.Remove(step);
+            Update();
+        }
+    }
+
     private void Update()
     {
         ModifiedAt = DateTimeOffset.Now;
