@@ -9,52 +9,53 @@ namespace Backend.Controller;
 public static class CategoryController
 {
 
-  public static IResult CreateCategory(
-      [FromServices] CategoryService _service,
-      [FromBody] CreateCategoryBody body
-      )
-  {
-    try
+    public static IResult CreateCategory(
+        [FromServices] CategoryService _service,
+        [FromBody] CreateCategoryBody body
+        )
     {
-      Category newCat = _service.Create(body.Name);
-      return Results.Created("", newCat);
+        try
+        {
+            Category newCat = _service.Create(body.Name);
+            return Results.Created("", newCat);
+        }
+        catch (System.Exception ex)
+        {
+            return Results.BadRequest(new { Error = ex.Message.ToString() });
+        }
     }
-    catch (System.Exception ex)
+    public static IResult GetAllCategories(
+    [FromServices] IRepository<Category> _repo
+    )
     {
-      return Results.BadRequest(new { Error = ex.Message.ToString() });
+        try
+        {
+            IEnumerable<Category> all = _repo.GetAll();
+            return Results.Ok(all);
+        }
+        catch (System.Exception)
+        {
+            return Results.BadRequest();
+        }
     }
-  }
-  public static IResult GetAllCategories(
-  [FromServices] IRepository<Category> _repo
-  )
-  {
-    try
+    public static IResult ModifyCategory(
+        [FromServices] IRepository<Category> _repo,
+        [FromRoute] Guid CategoryId,
+        [FromBody] ModifyCategoryBody body
+        )
     {
-      IEnumerable<Category> all = _repo.GetAll();
-      return Results.Ok(all);
+        try
+        {
+            Category category = _repo.GetById(CategoryId);
+            category.ChangeName(body.Name);
+            _repo.Save(category);
+            return Results.Ok();
+        }
+        catch (System.Exception)
+        {
+            return Results.BadRequest();
+        }
     }
-    catch (System.Exception)
-    {
-      return Results.BadRequest();
-    }
-  }
-  public static IResult ModifyCategory(
-      [FromServices] IRepository<Category> _repo,
-      [FromRoute] Guid CategoryId,
-      [FromBody] ModifyCategoryBody body
-      )
-  {
-    try
-    {
-      Category category = _repo.GetById(CategoryId);
-      category.ChangeName(body.Name);
-      _repo.Save(category);
-      return Results.Ok();
-    }
-    catch (System.Exception)
-    {
-      return Results.BadRequest();
-    }
-  }
+
 
 }

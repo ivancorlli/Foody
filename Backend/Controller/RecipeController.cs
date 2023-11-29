@@ -133,5 +133,35 @@ public static class RecipeController
         }
     }
 
+    public static IResult AllRecipes(
+        [FromServices] IRepository<Recipe> _repo
+       )
+    {
+        try
+        {
+            IEnumerable<Recipe> recipes = _repo.GetAll();
+            return Results.Ok(recipes);
+        }
+        catch (System.Exception)
+        {
+            return Results.BadRequest();
+        }
+    }
+
+    public static IResult RecipeById(
+        [FromServices] IRepository<Recipe> _repo,
+        [FromRoute] Guid RecipeId
+        )
+    {
+        try
+        {
+            Recipe recipe = _repo.GetById(RecipeId);
+            return Results.Ok(recipe);
+        }
+        catch (System.Exception)
+        {
+            return Results.BadRequest();
+        }
+    }
 
 }

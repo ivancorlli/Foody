@@ -5,7 +5,8 @@ public static class Index
     public static IEndpointRouteBuilder ApiV1(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapGroup("/api")
-          .CategoryRoutes();
+          .CategoryRoutes()
+          .RecipeRoutes();
         return endpoints;
     }
 }
