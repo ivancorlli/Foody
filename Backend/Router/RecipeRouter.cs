@@ -4,7 +4,7 @@ namespace Backend.Router;
 
 internal static class RecipeRouter
 {
-    public static IEndpointRouteBuilder RecipeRoutes(this IEndpointRouteBuilder e)
+    internal static IEndpointRouteBuilder RecipeRoutes(this IEndpointRouteBuilder e)
     {
         e.MapGroup("/recipes")
         .Endpoints();

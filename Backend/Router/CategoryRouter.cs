@@ -5,7 +5,7 @@ internal static class CategoryRouter
 {
     internal static IEndpointRouteBuilder CategoryRoutes(this IEndpointRouteBuilder e)
     {
-        e.MapGroup("/categories");
+        e.MapGroup("/categories").MapEndpoints();
         return e;
     }
 

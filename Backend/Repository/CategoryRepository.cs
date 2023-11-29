@@ -1,10 +1,11 @@
 using Backend.Context;
 using Backend.Entity;
 using Backend.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Repository;
 
-public sealed class CategoryRepository:IRepository<Category>,ICategoryRepository
+public sealed class CategoryRepository : IRepository<Category>, ICategoryRepository
 {
     private readonly FoodyContext _context;
     public CategoryRepository(FoodyContext context)
@@ -12,28 +13,38 @@ public sealed class CategoryRepository:IRepository<Category>,ICategoryRepository
         _context = context;
     }
 
-    public void Create(Category Entity)
+    public async Task Create(Category Entity)
     {
-        throw new NotImplementedException();
+            await _context.Categories.AddAsync(Entity);
+            await _context.SaveChangesAsync();
     }
 
-    public IEnumerable<Category> GetAll()
+    public async IAsyncEnumerable<Category> GetAll()
     {
-        throw new NotImplementedException();
+        var categories = await _context.Categories.ToListAsync();
+        foreach (var category in categories)
+        {
+            yield return category;
+        }
+
     }
 
-    public Category GetById(Guid Id)
+    public async ValueTask<Category?> GetById(Guid Id)
     {
-        throw new NotImplementedException();
+        Category? category = await _context.Categories.FindAsync(Id);
+        return category;
     }
 
-    public bool IsNameUsed(string Name)
+    public async ValueTask<bool> IsNameUsed(string Name)
     {
-        throw new NotImplementedException();
+        var exists = await _context.Categories.Where(x => x.Name.ToLower() == Name.ToLower()).ToListAsync();
+        if (exists.Count > 0) return true;
+        return false;
     }
 
-    public void Save(Category Entity)
+    public async Task SaveAsync()
     {
-        throw new NotImplementedException();
+        await _context.SaveChangesAsync();
     }
+
 }

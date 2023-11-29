@@ -2,8 +2,8 @@ namespace Backend.Interface;
 
 public interface IRepository<T> where T : class
 {
-  public void Create(T Entity);
-  public T GetById(Guid Id);
-  public IEnumerable<T> GetAll();
-  public void Save(T Entity);
+  public Task Create(T Entity);
+  public ValueTask<T?> GetById(Guid Id);
+  public IAsyncEnumerable<T> GetAll();
+  public Task SaveAsync();
 }

@@ -1,6 +1,7 @@
 using Backend.Context;
 using Backend.Entity;
 using Backend.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Repository;
 
@@ -11,23 +12,28 @@ public sealed class RecipeRepository : IRepository<Recipe>
     {
         _context = context;
     } 
-    public void Create(Recipe Entity)
+    public async Task Create(Recipe Entity)
     {
-        throw new NotImplementedException();
+      await _context.Recipes.AddAsync(Entity);
+      await _context.SaveChangesAsync(); 
     }
 
-    public IEnumerable<Recipe> GetAll()
+    public async IAsyncEnumerable<Recipe> GetAll()
     {
-        throw new NotImplementedException();
+        var recipes= await _context.Recipes.ToListAsync();
+        foreach (var recipe in  recipes)
+        {
+            yield return recipe;
+        }
     }
 
-    public Recipe GetById(Guid Id)
+    public async ValueTask<Recipe?> GetById(Guid Id)
     {
-        throw new NotImplementedException();
+        return await _context.Recipes.FindAsync(Id);
     }
 
-    public void Save(Recipe Entity)
+    public async Task SaveAsync()
     {
-        throw new NotImplementedException();
+        await _context.SaveChangesAsync();
     }
 }

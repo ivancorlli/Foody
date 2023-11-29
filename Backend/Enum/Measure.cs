@@ -12,5 +12,6 @@ public enum Measure
   Liter,
   Mililiter,
   Celsius,
-  Fahrenheit
+  Fahrenheit,
+  Unit
 }

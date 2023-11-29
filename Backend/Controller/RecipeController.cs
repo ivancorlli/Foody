@@ -11,7 +11,7 @@ namespace Backend.Controller;
 public static class RecipeController
 {
 
-    public static IResult CreateRecipe(
+    public static async ValueTask<IResult> CreateRecipe(
           [FromServices] IRepository<Recipe> _repo,
           [FromBody] CreateRecipeBody body
       )
@@ -21,8 +21,8 @@ public static class RecipeController
             Title title = new(body.Title);
             Description description = new(body.Description);
             Recipe newRecipe = new(title, description, body.CategoryId);
-            _repo.Create(newRecipe);
-            return Results.Created("", newRecipe);
+            await _repo.Create(newRecipe);
+            return Results.Created(newRecipe.Id.ToString(), newRecipe);
         }
         catch (System.Exception)
         {
@@ -45,7 +45,8 @@ public static class RecipeController
               Measure.Miligram.ToString(),
               Measure.Teaspoon.ToString(),
               Measure.Mililiter.ToString(),
-              Measure.Fahrenheit.ToString()
+              Measure.Fahrenheit.ToString(),
+              Measure.Unit.ToString()
             };
 
             return Results.Ok(measurements);
@@ -57,7 +58,7 @@ public static class RecipeController
     }
 
 
-    public static IResult AddIngridient(
+    public static async ValueTask<IResult> AddIngridient(
         [FromServices] IRepository<Recipe> _repo,
         [FromBody] IngridientRecipeBody body,
         [FromRoute] Guid RecipeId
@@ -66,8 +67,10 @@ public static class RecipeController
         try
         {
             Ingridient ingridient = new(body.Name, body.Qty, body.Measure);
-            Recipe recipe = _repo.GetById(RecipeId);
+            Recipe? recipe = await _repo.GetById(RecipeId);
+            if (recipe == null) return Results.NotFound();
             recipe.AddIngridient(ingridient);
+            await _repo.SaveAsync();
             return Results.Ok();
         }
         catch (System.Exception)
@@ -76,7 +79,7 @@ public static class RecipeController
         }
     }
 
-    public static IResult RemoveIngridient(
+    public static async ValueTask<IResult> RemoveIngridient(
         [FromServices] IRepository<Recipe> _repo,
         [FromBody] IngridientRecipeBody body,
         [FromRoute] Guid RecipeId
@@ -85,7 +88,8 @@ public static class RecipeController
         try
         {
             Ingridient ingridient = new(body.Name, body.Qty, body.Measure);
-            Recipe recipe = _repo.GetById(RecipeId);
+            Recipe? recipe = await _repo.GetById(RecipeId);
+            if (recipe == null) return Results.NotFound();
             recipe.RemoveIngridient(ingridient);
             return Results.Ok();
         }
@@ -96,7 +100,7 @@ public static class RecipeController
 
     }
 
-    public static IResult AddStep(
+    public static async ValueTask<IResult> AddStep(
         [FromServices] IRepository<Recipe> _repo,
         [FromBody] StepRecipeBody body,
         [FromRoute] Guid RecipeId
@@ -105,7 +109,8 @@ public static class RecipeController
         try
         {
             Step step = new(body.Name, body.Description, body.Picture);
-            Recipe recipe = _repo.GetById(RecipeId);
+            Recipe? recipe = await _repo.GetById(RecipeId);
+            if (recipe == null) return Results.NotFound();
             recipe.AddStep(step);
             return Results.Ok();
         }
@@ -114,7 +119,7 @@ public static class RecipeController
             return Results.BadRequest();
         }
     }
-    public static IResult RemoveStep(
+    public static async ValueTask<IResult> RemoveStep(
         [FromServices] IRepository<Recipe> _repo,
         [FromBody] StepRecipeBody body,
         [FromRoute] Guid RecipeId
@@ -123,7 +128,8 @@ public static class RecipeController
         try
         {
             Step step = new(body.Name, body.Description, body.Picture);
-            Recipe recipe = _repo.GetById(RecipeId);
+            Recipe? recipe = await _repo.GetById(RecipeId);
+            if (recipe == null) return Results.NotFound();
             recipe.RemoveStep(step);
             return Results.Ok();
         }
@@ -139,7 +145,7 @@ public static class RecipeController
     {
         try
         {
-            IEnumerable<Recipe> recipes = _repo.GetAll();
+            IAsyncEnumerable<Recipe> recipes = _repo.GetAll();
             return Results.Ok(recipes);
         }
         catch (System.Exception)
@@ -148,14 +154,15 @@ public static class RecipeController
         }
     }
 
-    public static IResult RecipeById(
+    public static async ValueTask<IResult> RecipeById(
         [FromServices] IRepository<Recipe> _repo,
         [FromRoute] Guid RecipeId
         )
     {
         try
         {
-            Recipe recipe = _repo.GetById(RecipeId);
+            Recipe? recipe = await _repo.GetById(RecipeId);
+            if (recipe == null) return Results.NotFound();
             return Results.Ok(recipe);
         }
         catch (System.Exception)

@@ -12,9 +12,9 @@ public sealed class CategoryService
     _repo = repo;
   }
 
-  public Category Create(string name)
+  public async ValueTask<Category> Create(string name)
   {
-    bool exists = _repo.IsNameUsed(name.ToLower());
+    bool exists = await _repo.IsNameUsed(name.ToLower());
     if (exists) throw new CategoryAlreadyExists(name.ToLower());
     Category newCat = new(name);
     return newCat;

@@ -1,3 +1,4 @@
+using System;
 using Backend.Dto;
 using Backend.Entity;
 using Backend.Interface;
@@ -9,15 +10,17 @@ namespace Backend.Controller;
 public static class CategoryController
 {
 
-    public static IResult CreateCategory(
+    public static async ValueTask<IResult> CreateCategory(
         [FromServices] CategoryService _service,
+        [FromServices] IRepository<Category> _repo,
         [FromBody] CreateCategoryBody body
         )
     {
         try
         {
-            Category newCat = _service.Create(body.Name);
-            return Results.Created("", newCat);
+            Category newCat = await _service.Create(body.Name);
+            await _repo.Create(newCat);
+            return Results.Created(newCat.Id.ToString(),newCat);
         }
         catch (System.Exception ex)
         {
@@ -30,7 +33,7 @@ public static class CategoryController
     {
         try
         {
-            IEnumerable<Category> all = _repo.GetAll();
+            IAsyncEnumerable<Category> all = _repo.GetAll();
             return Results.Ok(all);
         }
         catch (System.Exception)
@@ -38,7 +41,7 @@ public static class CategoryController
             return Results.BadRequest();
         }
     }
-    public static IResult ModifyCategory(
+    public static async ValueTask<IResult> ModifyCategory(
         [FromServices] IRepository<Category> _repo,
         [FromRoute] Guid CategoryId,
         [FromBody] ModifyCategoryBody body
@@ -46,9 +49,10 @@ public static class CategoryController
     {
         try
         {
-            Category category = _repo.GetById(CategoryId);
+            Category? category = await _repo.GetById(CategoryId);
+            if(category == null) return Results.NotFound();
             category.ChangeName(body.Name);
-            _repo.Save(category);
+            await _repo.SaveAsync();
             return Results.Ok();
         }
         catch (System.Exception)
