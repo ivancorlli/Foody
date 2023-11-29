@@ -15,5 +15,7 @@ public class FoodyContext:DbContext
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        builder.ApplyConfiguration(new RecipeConfiguration());
+        builder.ApplyConfiguration(new CategoryConfiguration());
     }
 }

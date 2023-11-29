@@ -12,8 +12,13 @@ public sealed class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
         builder.HasKey(x=>x.Id);
         builder.HasIndex(x=>x.CategoryId);
 
-        builder.Property(x=>x.Title.Value).HasColumnType("varchar");
-        builder.Property(x=>x.Description.Value).HasColumnType("varchar");
+        builder.OwnsOne(x=>x.Title,t=>{
+            t.Property(x=>x.Value).HasColumnType("varchar");
+        });
+        builder.OwnsOne(x=>x.Description,d=>{
+            d.Property(x=>x.Value).HasColumnType("varchar");
+        });
+
         builder.OwnsMany(x=>x.Steps,s=>{
             s.Property(x=>x.Name).HasColumnType("varchar");
             s.Property(x=>x.Description).HasColumnType("varchar");

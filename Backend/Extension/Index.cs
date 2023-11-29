@@ -2,6 +2,7 @@
 using Backend.Context;
 using Backend.Entity;
 using Backend.Interface;
+using Backend.Repository;
 using Backend.Service;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,8 +18,9 @@ public static class Index
 
     internal static IServiceCollection ConfigureRepository(this IServiceCollection services)
     {
-        services.AddScoped<IRepository<Category>>();
-        services.AddScoped<IRepository<Recipe>>();
+        services.AddScoped<IRepository<Category>,CategoryRepository>();
+        services.AddScoped<ICategoryRepository,CategoryRepository>();
+        services.AddScoped<IRepository<Recipe>,RecipeRepository>();
         services.AddScoped<CategoryService>();
         return services;
     }
