@@ -1,3 +1,6 @@
+import React from "react"
+import { MainLayout } from "@/component/MainLayout"
+
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
@@ -7,7 +10,6 @@ export const metadata: Metadata = {
   title: 'Foody',
   description: 'Recipes Application',
 }
-
 export default function RootLayout({
   children,
 }: {
@@ -15,7 +17,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <MainLayout>
+          {children}
+        </MainLayout>
+      </body>
     </html>
   )
 }

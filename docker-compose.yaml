@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  mssql:
+    container_name: slqserver
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - 1433:1433
+    volumes:
+      - mssqldata:/var/lib/mssqlql/data
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=mssql1Ipw
+
+volumes:
+  mssqldata:
+    driver: local

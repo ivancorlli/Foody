@@ -1,11 +1,8 @@
-import Image from 'next/image'
+import { Main } from "@/component/Main"
+import React from "react"
 
 export default function Home() {
   return (
-    <main >
-      <p>
-        Starting Point
-      </p>
-    </main>
+    <Main />
   )
 }
