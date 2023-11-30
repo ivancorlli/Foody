@@ -32,14 +32,14 @@ export const Recipe = (props: {
       w='100%'
       justifyContent='space-between'
       _hover={{
-        bg: 'lightgray',
-        cursor: 'pointer'
+        bg: 'lightgray'
       }}
       p='5px'
       borderRadius={8}
-      onClick={() => handleClick()}
     >
-      <Heading as='h6' size='md' fontWeight='bold' >{`${props.idx}. ${props.title}`}</Heading>
+      <Heading  _hover={{
+        cursor: 'pointer'
+      }} onClick={() => handleClick()} as='h6' size='md' fontWeight='bold' >{`${props.idx}. ${props.title}`}</Heading>
       <Button
         py='5px'
         onClick={() => handleDelete()}

@@ -30,6 +30,29 @@ public static class RecipeController
         }
     }
 
+    public static async ValueTask<IResult> ModifyRecipe(
+          [FromServices] IRepository<Recipe> _repo,
+          [FromBody] ModifyRecipeBody body,
+          [FromRoute] Guid RecipeId
+      )
+    {
+        try
+        {
+            Title title = new(body.Title);
+            Description description = new(body.Description);
+            Recipe? recipe = await _repo.GetById(RecipeId);
+            if (recipe == null) return Results.NotFound();
+            recipe.ChangeDescription(description);
+            recipe.ChangeTitle(title);
+            await _repo.SaveAsync();
+            return Results.Ok();
+        }
+        catch (System.Exception)
+        {
+            return Results.BadRequest();
+        }
+    }
+
     public static IResult AllMeasurements()
     {
         try

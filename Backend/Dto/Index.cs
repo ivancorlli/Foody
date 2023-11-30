@@ -9,6 +9,11 @@ public sealed record CreateRecipeBody(
     string Description,
     Guid CategoryId
     );
+public sealed record ModifyRecipeBody(
+    string Title,
+    string Description,
+    Guid CategoryId
+    );
 
 public sealed record IngridientRecipeBody(
     string Name,

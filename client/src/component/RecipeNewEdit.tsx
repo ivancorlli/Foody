@@ -1,63 +1,86 @@
-import { Button, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from '@chakra-ui/react'
+import { Button, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Textarea } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 
 export const RecipeNewEdit = (
   props: {
     isOpen: boolean,
     onClose: () => void,
-    recipeId?: string
+    recipeId?: string,
+    onUpdate:()=>void
   }
 ) => {
-  const [form, setForm] = useState<{ title: string, category: string, description: string }>({ name: '', category: '', description: '' })
+  const [form, setForm] = useState<{ title: string, category: string, description: string }>({ title: '', category: '', description: '' })
+  const [categories, setCategories] = useState<{ id: string, name: string }[]>([])
+
+  useEffect(()=>{
+    async function getCategories() {
+      try {
+        const response = await fetch(`http://localhost:5000/api/categories`, {
+          method: 'GET',
+        });
+        const data = await response.json();
+        const dataCat:{id:string,name:string}[] = []
+        data.forEach((e:any) => {
+          dataCat.push({id:e.id,name:e.name})
+        });
+        setCategories(dataCat)
+      } catch (Exeption) {
+
+      }
+    }
+    getCategories()
+  },[])
 
   useEffect(() => {
-    async function getCategory(recipe: string) {
+    async function getRecipe(recipe: string) {
       try {
         const response = await fetch(`http://localhost:5000/api/recipes/${recipe}`, {
           method: 'GET',
-          mode: 'no-cors',
-          credentials: 'omit',
-          headers: {
-            'Content-Type': 'application/json'
-          }
         });
-        response.json(); // parses JSON response into native JavaScript objects
+        const data = await response.json()
+        setForm({
+          ...form,
+          title: data.title.value,
+          category: data.categoryId,
+          description: data.description.value
+        })
       } catch (Exeption) {
 
       }
     }
     if (props.recipeId) {
-      getCategory(props.recipeId)
+      getRecipe(props.recipeId)
     }
   }, [props.recipeId])
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const data = {
-      Title: form.title,
-      CategoryId: form.category,
-      Description: form.description
+      title: form.title,
+      categoryId: form.category,
+      description: form.description
     }
     if (props.recipeId) {
       updateRecipe(props.recipeId, data)
     } else {
       createRecipe(data)
     }
+    handleClose() 
+    props.onUpdate()
   }
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement >) {
     setForm({
       ...form,
-      [e.target.value]: e.target.value
+      [e.target.name]: e.target.value
     })
   }
 
   async function createRecipe(data: any): Promise<void> {
     try {
+      console.log(data)
       const response = await fetch("http://localhost:5000/api/recipes", {
         method: 'POST',
-        mode: 'no-cors',
-        credentials: 'omit',
         headers: {
           'Content-Type': 'application/json'
           // 'Content-Type': 'application/x-www-form-urlencoded',
@@ -74,23 +97,26 @@ export const RecipeNewEdit = (
     try {
       const response = await fetch(`http://localhost:5000/api/recipes/${recipeId}`, {
         method: 'PATCH',
-        mode: 'no-cors',
-        credentials: 'omit',
         headers: {
           'Content-Type': 'application/json'
           // 'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: JSON.stringify(data) // body data type must match "Content-Type" header
       });
-      response.json(); // parses JSON response into native JavaScript objects
+      await response.json();
     } catch (Exeption) {
-
     }
 
   }
 
+  function handleClose()
+  {
+    props.onClose()
+    setForm({title:'',category:'',description:''})
+  }
+
   return (
-    <Modal isOpen={props.isOpen} onClose={props.onClose}>
+    <Modal isOpen={props.isOpen} onClose={handleClose}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
@@ -114,6 +140,23 @@ export const RecipeNewEdit = (
                 type='text'
                 defaultValue={form.title}
                 onChange={(e) => handleChange(e)}
+              />
+              <FormLabel>Categoria</FormLabel>
+              <Select placeholder='Categoria' name='category' onChange={(e)=>handleChange(e)}>
+                {
+
+                  categories.map((e,idx)=>{
+                   return <option key={idx} value={e.id}>{e.name}</option>
+
+                  })
+                }
+              </Select>
+              <FormLabel>Descripcion</FormLabel>
+              <Textarea 
+                name='description'
+                onChange={(e)=>handleChange(e)}
+                placeholder='Descripcion'
+                defaultValue={form.description}
               />
             </form>
           </FormControl>

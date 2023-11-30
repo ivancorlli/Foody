@@ -14,6 +14,7 @@ internal static class CategoryRouter
         e.MapPost("/", CategoryController.CreateCategory);
         e.MapGet("/", CategoryController.GetAllCategories);
         e.MapPatch("/{CategoryId}", CategoryController.ModifyCategory);
+        e.MapGet("/{CategoryId}", CategoryController.GetById);
         return e;
     }
 

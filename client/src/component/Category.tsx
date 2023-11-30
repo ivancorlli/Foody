@@ -18,13 +18,17 @@ export const Category = (props: {
       justifyContent='space-between'
       _hover={{
         bg: 'lightgray',
-        cursor: 'pointer'
       }}
       p='5px'
+      
       borderRadius={8}
-      onClick={() => handleClick()}
     >
-      <Heading as='h6' size='md' fontWeight='bold' >{`${props.idx}. ${props.name}`}</Heading>
+      <Heading
+      _hover={{
+        cursor: 'pointer'
+      }}
+      onClick={() => handleClick()}
+      as='h6' size='md' fontWeight='bold' >{`${props.idx}. ${props.name}`}</Heading>
     </HStack>
   )
 }

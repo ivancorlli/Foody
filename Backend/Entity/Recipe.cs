@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using Backend.ValueObject;
 namespace Backend.Entity;
 
@@ -26,6 +27,19 @@ public sealed class Recipe
         CreatedAt = now;
         ModifiedAt = now;
     }
+
+    public void ChangeTitle(Title title)
+    {
+        Title = title;
+        Update();
+    }
+
+    public void ChangeDescription(Description description)
+    {
+        Description = description;
+        Update();
+    }
+
 
     public void AddIngridient(Ingridient ingridient)
     {

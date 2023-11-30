@@ -61,5 +61,21 @@ public static class CategoryController
         }
     }
 
+     public static async ValueTask<IResult> GetById(
+        [FromServices] IRepository<Category> _repo,
+        [FromRoute] Guid CategoryId
+        )
+    {
+        try
+        {
+            Category? category = await _repo.GetById(CategoryId);
+            return Results.Ok(category);
+        }
+        catch (System.Exception)
+        {
+            return Results.BadRequest();
+        }
+    }
+
 
 }

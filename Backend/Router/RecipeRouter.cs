@@ -14,6 +14,7 @@ internal static class RecipeRouter
     private static IEndpointRouteBuilder Endpoints(this IEndpointRouteBuilder e)
     {
         e.MapPost("/", RecipeController.CreateRecipe);
+        e.MapPatch("/{RecipeId}", RecipeController.ModifyRecipe);
         e.MapPatch("/{RecipeId}/ingridients", RecipeController.AddIngridient);
         e.MapPatch("/{RecipeId}/steps", RecipeController.AddStep);
         e.MapDelete("/{RecipeId}/ingridients", RecipeController.RemoveIngridient);

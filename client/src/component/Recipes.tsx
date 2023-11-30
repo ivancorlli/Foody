@@ -1,7 +1,5 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { HStack, VStack, Button, Heading, useDisclosure, Stack, Skeleton, Divider } from '@chakra-ui/react'
-import { CategoryNewEdit } from './CategoryNewEdit'
-import { Category } from './Category'
 import { Recipe } from './Recipe'
 import { RecipeNewEdit } from './RecipeNewEdit'
 
@@ -14,11 +12,66 @@ interface IRecipe {
 
 export const Recipes = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const [recipes, setRecipes] = useState<IRecipe[]>([{ id: "09800dfhjk-123", title: "ejemplo", category: 'ejemplo', description: 'Esta es la desctipcion' }])
+  const [recipes, setRecipes] = useState<IRecipe[]>([])
   const [selected, setSelected] = useState<string>();
   function handleSelect(recipeId: string) {
     setSelected(recipeId)
     onOpen()
+  }
+
+  useEffect(()=>{
+    async function getRecipes()
+    {
+      try {
+        const response = await fetch(`http://localhost:5000/api/recipes`, {
+          method: 'GET'
+        });
+        const data = await response.json();
+        const lrecipes:IRecipe[]=[]
+        data.forEach((e:any) => {
+          const ex:IRecipe={
+            id:e.id,
+            title:e.title.value,
+            category:e.categoryId,
+            description:e.description.value
+          }
+          lrecipes.push(ex)
+        });
+        setRecipes(lrecipes)
+      } catch (Exeption ) {
+        console.log(Exeption)
+      }
+    }
+    getRecipes()
+  },[recipes])
+
+
+  async function onUpdate() {
+    try {
+      const response = await fetch(`http://localhost:5000/api/recipes`, {
+        method: 'GET'
+      });
+      const data = await response.json();
+      const lrecipes:IRecipe[]=[]
+      data.forEach((e:any) => {
+        const ex:IRecipe={
+          id:e.id,
+          title:e.title.value,
+          category:e.categoryId,
+          description:e.description.value
+        }
+        lrecipes.push(ex)
+      });
+      setRecipes(lrecipes)
+      setSelected(undefined)
+    } catch (Exeption ) {
+      console.log(Exeption)
+    }
+  }
+  function handleClose()
+  {
+    onClose()
+    setSelected(undefined) 
   }
 
   return (
@@ -44,8 +97,9 @@ export const Recipes = () => {
       <Divider />
       <RecipeNewEdit
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={handleClose}
         recipeId={selected}
+        onUpdate={onUpdate}
       />
       {
         recipes.length > 0 ?

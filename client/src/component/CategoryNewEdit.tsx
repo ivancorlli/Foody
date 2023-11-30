@@ -5,7 +5,8 @@ export const CategoryNewEdit = (
   props: {
     isOpen: boolean,
     onClose: () => void,
-    categoryId?: string
+    categoryId?: string,
+    onUpdate:()=>void
   }
 ) => {
   const [form, setForm] = useState<{ name: string }>({ name: '' })
@@ -15,13 +16,9 @@ export const CategoryNewEdit = (
       try {
         const response = await fetch(`http://localhost:5000/api/categories/${categoryId}`, {
           method: 'GET',
-          mode: 'no-cors',
-          credentials: 'omit',
-          headers: {
-            'Content-Type': 'application/json'
-          }
         });
-        response.json(); // parses JSON response into native JavaScript objects
+        const data = await response.json(); // parses JSON response into native JavaScript objects
+        setForm({name:data.name})
       } catch (Exeption) {
 
       }
@@ -34,13 +31,15 @@ export const CategoryNewEdit = (
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const data = {
-      Name: form.name
+      name: form.name
     }
     if (props.categoryId) {
       updateCategory(props.categoryId, data)
     } else {
       createCategory(data)
     }
+    handleClose()
+    props.onUpdate()
   }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -48,20 +47,23 @@ export const CategoryNewEdit = (
       name: e.target.value
     })
   }
+  function handleClose()
+  {
+    props.onClose()
+    setForm({name:''})
+  }
 
   async function createCategory(data: any): Promise<void> {
     try {
       const response = await fetch("http://localhost:5000/api/categories", {
         method: 'POST',
-        mode: 'no-cors',
-        credentials: 'omit',
         headers: {
           'Content-Type': 'application/json'
           // 'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: JSON.stringify(data) // body data type must match "Content-Type" header
       });
-      response.json(); // parses JSON response into native JavaScript objects
+      await response.json(); // parses JSON response into native JavaScript objects
     } catch (Exeption) {
 
     }
@@ -71,15 +73,13 @@ export const CategoryNewEdit = (
     try {
       const response = await fetch(`http://localhost:5000/api/categories/${categoryId}`, {
         method: 'PATCH',
-        mode: 'no-cors',
-        credentials: 'omit',
         headers: {
           'Content-Type': 'application/json'
           // 'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: JSON.stringify(data) // body data type must match "Content-Type" header
       });
-      response.json(); // parses JSON response into native JavaScript objects
+      await response.json(); // parses JSON response into native JavaScript objects
     } catch (Exeption) {
 
     }
@@ -87,7 +87,7 @@ export const CategoryNewEdit = (
   }
 
   return (
-    <Modal isOpen={props.isOpen} onClose={props.onClose}>
+    <Modal isOpen={props.isOpen} onClose={handleClose}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>

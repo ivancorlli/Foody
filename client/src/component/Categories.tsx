@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { HStack, VStack, Button, Heading, useDisclosure, Stack, Skeleton, isChakraTheme, Divider } from '@chakra-ui/react'
 import { CategoryNewEdit } from './CategoryNewEdit'
 import { Category } from './Category'
@@ -10,11 +10,62 @@ interface ICategory {
 
 export const Categories = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const [categories, setCategories] = useState<ICategory[]>([{ id: "09800dfhjk-123", name: "ejemplo" }])
-  const [selected, setSelected] = useState<string>();
+  const [categories, setCategories] = useState<ICategory[]>([])
+  const [selected, setSelected] = useState<string| undefined>();
   function handleSelect(categoryId: string) {
     setSelected(categoryId)
     onOpen()
+  }
+
+  useEffect(()=>{
+    async function getRecipes()
+    {
+      try {
+        const response = await fetch(`http://localhost:5000/api/categories`, {
+          method: 'GET'
+        });
+        const data = await response.json();
+        const lrecipes:ICategory[]=[]
+        data.forEach((e:any) => {
+          const ex:ICategory={
+            id:e.id,
+            name:e.name,
+          }
+          lrecipes.push(ex)
+        });
+        setCategories(lrecipes)
+      } catch (Exeption ) {
+        console.log(Exeption)
+      }
+    }
+    getRecipes()
+  },[categories])
+
+  async function onUpdate() {
+    try {
+      const response = await fetch(`http://localhost:5000/api/categories`, {
+        method: 'GET'
+      });
+      const data = await response.json();
+      const lrecipes:ICategory[]=[]
+      data.forEach((e:any) => {
+        const ex:ICategory={
+          id:e.id,
+          name:e.name,
+        }
+        lrecipes.push(ex)
+      });
+      setCategories(lrecipes)
+      setSelected(undefined)
+    } catch (Exeption ) {
+      console.log(Exeption)
+    } 
+  }
+
+  function handleClose()
+  {
+    onClose()
+    setSelected(undefined) 
   }
 
   return (
@@ -40,8 +91,9 @@ export const Categories = () => {
       <Divider />
       <CategoryNewEdit
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={handleClose}
         categoryId={selected}
+        onUpdate={onUpdate}
       />
       {
         categories.length > 0 ?
